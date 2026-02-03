@@ -60,24 +60,26 @@ code {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
-const MD_URL =
-  "https://raw.githubusercontent.com/2urn/mariannebernstein/main/Marianne-Bernstein-cv.md";
+marked.setOptions({ breaks: true, gfm: true });
 
-marked.setOptions({
-  breaks: true,
-  gfm: true
-});
-
-fetch(MD_URL + "?_ts=" + Date.now())
-  .then(r => r.text())
+fetch("./Marianne-Bernstein-cv.md?_ts=" + Date.now())
+  .then(r => {
+    if (!r.ok) throw new Error("Failed to load markdown");
+    return r.text();
+  })
   .then(md => {
     document.getElementById("content").innerHTML = marked.parse(md);
     requestAnimationFrame(resize);
+  })
+  .catch(err => {
+    document.getElementById("content").textContent = err.message;
   });
 
 function resize() {
-  const height = document.body.scrollHeight;
-  parent.postMessage({ type: "resize", height }, "*");
+  parent.postMessage(
+    { type: "resize", height: document.body.scrollHeight },
+    "*"
+  );
 }
 </script>
 
