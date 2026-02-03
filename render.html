@@ -1,25 +1,84 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
+
 <style>
-body {
+:root {
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --line-height: 1.55;
+}
+
+html, body {
   margin: 0;
-  font-family: inherit;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  line-height: var(--line-height);
+  color: inherit;
+}
+
+h1, h2, h3 {
+  margin: 1.5em 0 0.5em;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+ul, ol {
+  margin: 0 0 1em 1.25em;
+}
+
+blockquote {
+  margin: 0 0 1em;
+  padding-left: 1em;
+  border-left: 2px solid currentColor;
+  opacity: 0.8;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid currentColor;
+  opacity: 0.2;
+  margin: 2em 0;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9em;
 }
 </style>
 </head>
+
 <body>
 
-<div id="md"></div>
+<div id="content"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
-fetch("https://raw.githubusercontent.com/2urn/mariannebernstein/main/Marianne-Bernstein-cv.md")
+const MD_URL =
+  "https://raw.githubusercontent.com/2urn/mariannebernstein/main/Marianne-Bernstein-cv.md";
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
+
+fetch(MD_URL + "?_ts=" + Date.now())
   .then(r => r.text())
-  .then(t => {
-    document.getElementById("md").innerHTML =
-      t.split("\n").map(l => `<p>${l}</p>`).join("");
+  .then(md => {
+    document.getElementById("content").innerHTML = marked.parse(md);
+    requestAnimationFrame(resize);
   });
+
+function resize() {
+  const height = document.body.scrollHeight;
+  parent.postMessage({ type: "resize", height }, "*");
+}
 </script>
 
 </body>
